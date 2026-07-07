@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eduardo Botello — Ciberseguridad</title>
+<style>
+  :root {
+    --bg:       #08090d;
+    --surface:  #0f1117;
+    --card:     #141720;
+    --border:   #1e2330;
+    --cyan:     #00d4ff;
+    --green:    #00ff88;
+    --purple:   #7c3aed;
+    --text:     #e2e8f0;
+    --muted:    #64748b;
+    --white:    #ffffff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 4px; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    background: rgba(8,9,13,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 60px;
+  }
+  .nav-brand {
+    font-weight: 700; font-size: 1rem; letter-spacing: 0.05em;
+    color: var(--cyan); text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 1.8rem; list-style: none; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 0.85rem;
+    letter-spacing: 0.04em; transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--cyan); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 80px 2rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .hero-grid {
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    position: absolute; inset: 0; z-index: 0;
+  }
+  .hero-glow {
+    position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse at center, rgba(0,212,255,0.07) 0%, transparent 70%);
+    z-index: 0;
+  }
+  .hero-content {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; max-width: 800px;
+  }
+  .hero-photo-wrap {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    border: 2px solid var(--cyan);
+    box-shadow: 0 0 30px rgba(0,212,255,0.25);
+    overflow: hidden; margin-bottom: 2rem;
+    flex-shrink: 0;
+  }
+  .hero-photo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.25);
+    color: var(--cyan);
+    font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 0.3rem 1rem; border-radius: 999px;
+    margin-bottom: 1.2rem;
+  }
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 800; letter-spacing: -0.02em; line-height: 1.1;
+    color: var(--white); margin-bottom: 1rem;
+  }
+  h1 span { color: var(--cyan); }
+  .hero-sub {
+    font-size: 1.1rem; color: var(--muted); margin-bottom: 2.5rem;
+    max-width: 560px;
+  }
+  .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+  .btn-primary {
+    background: var(--cyan); color: #08090d;
+    font-weight: 700; font-size: 0.9rem; letter-spacing: 0.04em;
+    padding: 0.75rem 1.8rem; border-radius: 6px;
+    text-decoration: none; transition: opacity .2s, transform .2s;
+    border: none; cursor: pointer;
+  }
+  .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text); font-size: 0.9rem;
+    padding: 0.75rem 1.8rem; border-radius: 6px;
+    text-decoration: none; transition: border-color .2s, color .2s;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+  .hero-scroll {
+    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+    color: var(--muted); font-size: 0.75rem; letter-spacing: 0.1em;
+    animation: bounce 2s infinite;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 5rem 2rem; max-width: 1000px; margin: 0 auto; }
+  .section-label {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--cyan); margin-bottom: 0.6rem;
+  }
+  .section-title {
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 800; color: var(--white); margin-bottom: 3rem;
+  }
+  .divider {
+    height: 1px; background: var(--border);
+    max-width: 1000px; margin: 0 auto;
+  }
+
+  /* ── ABOUT ── */
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;
+  }
+  .about-text p { color: var(--muted); margin-bottom: 1rem; font-size: 0.95rem; }
+  .about-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.2rem;
+    transition: border-color .2s;
+  }
+  .stat-card:hover { border-color: rgba(0,212,255,0.3); }
+  .stat-num { font-size: 2rem; font-weight: 800; color: var(--cyan); }
+  .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+
+  /* ── SKILLS ── */
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .skill-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.4rem;
+    transition: border-color .25s, transform .25s;
+  }
+  .skill-card:hover { border-color: rgba(0,212,255,0.35); transform: translateY(-3px); }
+  .skill-icon { font-size: 1.6rem; margin-bottom: 0.8rem; }
+  .skill-title { font-size: 0.9rem; font-weight: 700; color: var(--white); margin-bottom: 0.4rem; }
+  .skill-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.8rem; }
+  .tag {
+    font-size: 0.68rem; padding: 0.2rem 0.6rem;
+    background: rgba(0,212,255,0.07);
+    border: 1px solid rgba(0,212,255,0.15);
+    color: var(--cyan); border-radius: 4px;
+  }
+
+  /* ── FORMACIÓN ── */
+  .timeline { display: flex; flex-direction: column; gap: 1.5rem; }
+  .timeline-item {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.5rem;
+    position: relative; overflow: hidden;
+    transition: border-color .25s;
+  }
+  .timeline-item::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--cyan), var(--purple));
+    border-radius: 3px 0 0 3px;
+  }
+  .timeline-item:hover { border-color: rgba(0,212,255,0.3); }
+  .timeline-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;
+  }
+  .timeline-org { font-size: 0.8rem; color: var(--cyan); font-weight: 600; }
+  .timeline-date {
+    font-size: 0.75rem; color: var(--muted);
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    padding: 0.2rem 0.6rem; border-radius: 4px;
+  }
+  .timeline-title { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.4rem; }
+  .timeline-desc { font-size: 0.83rem; color: var(--muted); }
+  .badge-en-curso {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.25);
+    color: var(--green); font-size: 0.68rem; font-weight: 700;
+    padding: 0.2rem 0.6rem; border-radius: 999px; margin-top: 0.6rem;
+  }
+  .badge-en-curso::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--green); border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; transform: scale(1); }
+    50% { opacity:0.4; transform: scale(1.4); }
+  }
+
+  /* ── EXPERIENCIA ── */
+  .exp-list { display: flex; flex-direction: column; gap: 1rem; }
+  .exp-item {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.4rem 1.4rem 1.4rem 1.8rem;
+    position: relative; transition: border-color .25s;
+  }
+  .exp-item:hover { border-color: rgba(124,58,237,0.35); }
+  .exp-item::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; background: var(--purple);
+    border-radius: 3px 0 0 3px;
+  }
+  .exp-header {
+    display: flex; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.3rem;
+  }
+  .exp-role { font-size: 0.95rem; font-weight: 700; color: var(--white); }
+  .exp-date { font-size: 0.75rem; color: var(--muted); }
+  .exp-company { font-size: 0.82rem; color: var(--purple); font-weight: 600; margin-bottom: 0.6rem; }
+  .exp-bullets { list-style: none; }
+  .exp-bullets li {
+    font-size: 0.82rem; color: var(--muted); padding: 0.2rem 0;
+    padding-left: 1rem; position: relative;
+  }
+  .exp-bullets li::before {
+    content: '›'; position: absolute; left: 0; color: var(--cyan);
+  }
+
+  /* ── CONTACTO ── */
+  .contact-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 3rem;
+    text-align: center;
+  }
+  .contact-wrap h3 { font-size: 1.6rem; color: var(--white); margin-bottom: 0.8rem; }
+  .contact-wrap p { color: var(--muted); margin-bottom: 2rem; }
+  .social-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+  .social-btn {
+    display: flex; align-items: center; gap: 0.6rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--text); text-decoration: none;
+    padding: 0.7rem 1.4rem; border-radius: 8px; font-size: 0.88rem;
+    transition: all .2s;
+  }
+  .social-btn:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,212,255,0.05); }
+  .social-btn svg { width: 18px; height: 18px; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center; padding: 2rem;
+    color: var(--muted); font-size: 0.78rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .contact-wrap { padding: 2rem 1.2rem; }
+    section { padding: 3.5rem 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#hero">EB_SEC</a>
+  <ul class="nav-links">
+    <li><a href="#sobre-mi">Sobre mí</a></li>
+    <li><a href="#habilidades">Habilidades</a></li>
+    <li><a href="#formacion">Formación</a></li>
+    <li><a href="#experiencia">Experiencia</a></li>
+    <li><a href="#proyectos">Proyectos</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero" style="max-width:100%; padding-top:0; padding-bottom:0;">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-photo-wrap">
+      <img src="data:image/jpeg;base64,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" alt="Eduardo Botello">
+    </div>
+    <div class="hero-tag">Disponible para oportunidades</div>
+    <h1>Eduardo<br><span>Botello Bueno</span></h1>
+    <p class="hero-sub">
+      Analista de Ciberseguridad Junior — Pentesting · Blue Team · SOC<br>
+      Técnico SMR con base en Sevilla, formación activa en hacking ético y defensa digital.
+    </p>
+    <div class="hero-ctas">
+      <a href="#contacto" class="btn-primary">Contactar</a>
+      <a href="CV_Eduardo_Botello_Evolve.pdf" download class="btn-ghost">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        Descargar CV
+      </a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>scroll</span>
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SOBRE MÍ -->
+<section id="sobre-mi">
+  <p class="section-label">// 01 · sobre mí</p>
+  <h2 class="section-title">¿Quién soy?</h2>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>
+        Técnico en Sistemas Microinformáticos y Redes con formación especializada en
+        ciberseguridad y hacking ético. Mi objetivo es trabajar protegiendo sistemas
+        e infraestructuras desde dentro — entendiendo cómo piensa el atacante para
+        anticiparme a él.
+      </p>
+      <p>
+        Casi cinco años gestionando incidencias técnicas en campo real con VOI Technology
+        me han dado una capacidad de diagnóstico sistemático que traslado directamente
+        al análisis de seguridad.
+      </p>
+      <p>
+        Actualmente completando formación avanzada en Evolve Security Academy,
+        cubriendo pentesting, forense digital, redes y SOC / Blue Team.
+      </p>
+    </div>
+    <div class="about-stats">
+      <div class="stat-card">
+        <div class="stat-num">+4</div>
+        <div class="stat-label">años en entornos técnicos reales</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">2</div>
+        <div class="stat-label">certificaciones en ciberseguridad</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">4</div>
+        <div class="stat-label">áreas de especialización</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">+75%</div>
+        <div class="stat-label">completado en Evolve Sec. Academy</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HABILIDADES -->
+<section id="habilidades">
+  <p class="section-label">// 02 · habilidades</p>
+  <h2 class="section-title">Competencias técnicas</h2>
+  <div class="skills-grid">
+
+    <div class="skill-card">
+      <div class="skill-icon">🎯</div>
+      <div class="skill-title">Seguridad ofensiva</div>
+      <div class="skill-desc">Reconocimiento, escaneo de vulnerabilidades, explotación básica y reporte de hallazgos.</div>
+      <div class="skill-tags">
+        <span class="tag">Kali Linux</span>
+        <span class="tag">Nmap</span>
+        <span class="tag">Burp Suite</span>
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-icon">🛡️</div>
+      <div class="skill-title">Blue Team / SOC</div>
+      <div class="skill-desc">Análisis de incidentes, defensa perimetral, detección de amenazas y respuesta.</div>
+      <div class="skill-tags">
+        <span class="tag">SOC</span>
+        <span class="tag">SIEM</span>
+        <span class="tag">Defensa perimetral</span>
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-icon">🔬</div>
+      <div class="skill-title">Análisis forense</div>
+      <div class="skill-desc">Adquisición de evidencias, análisis de logs e integridad de datos en investigaciones digitales.</div>
+      <div class="skill-tags">
+        <span class="tag">Forense digital</span>
+        <span class="tag">Análisis de logs</span>
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-icon">🌐</div>
+      <div class="skill-title">Redes y protocolos</div>
+      <div class="skill-desc">Arquitectura de redes, análisis de tráfico y configuración de firewalls y VPNs.</div>
+      <div class="skill-tags">
+        <span class="tag">TCP/IP</span>
+        <span class="tag">DNS</span>
+        <span class="tag">Wireshark</span>
+        <span class="tag">Firewall</span>
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-icon">🖥️</div>
+      <div class="skill-title">Sistemas operativos</div>
+      <div class="skill-desc">Administración avanzada de Windows y nivel medio-alto en Linux/Ubuntu, macOS, Android.</div>
+      <div class="skill-tags">
+        <span class="tag">Windows</span>
+        <span class="tag">Linux</span>
+        <span class="tag">macOS</span>
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-icon">⚙️</div>
+      <div class="skill-title">Diagnóstico técnico</div>
+      <div class="skill-desc">Resolución sistemática de incidencias en entornos reales con gestión documental de partes.</div>
+      <div class="skill-tags">
+        <span class="tag">Troubleshooting</span>
+        <span class="tag">Reporting</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FORMACIÓN -->
+<section id="formacion">
+  <p class="section-label">// 03 · formación</p>
+  <h2 class="section-title">Educación y certificaciones</h2>
+  <div class="timeline">
+
+    <div class="timeline-item">
+      <div class="timeline-header">
+        <span class="timeline-org">Evolve Security Academy</span>
+        <span class="timeline-date">2025 – 2026</span>
+      </div>
+      <div class="timeline-title">Máster en Ciberseguridad — Pentesting, Forense, Redes y SOC / Blue Team</div>
+      <div class="timeline-desc">
+        Programa integral de ciberseguridad. Módulos completados: hacking ético, redes y
+        protocolos, análisis forense digital. En progreso: SOC y defensa de infraestructuras.
+      </div>
+      <span class="badge-en-curso">Completado · Certificado pendiente</span>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-header">
+        <span class="timeline-org">BIG School</span>
+        <span class="timeline-date">Abr. 2026</span>
+      </div>
+      <div class="timeline-title">Ciberseguridad y Hacking Ético — Detección de Vulnerabilidades y Defensa Digital</div>
+      <div class="timeline-desc">
+        Técnicas de reconocimiento, explotación controlada y defensa digital.
+        Certificado oficial obtenido (12/04/2026) — 6 horas intensivas.
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-header">
+        <span class="timeline-org">IES Rodrigo Caro, Coria del Río</span>
+        <span class="timeline-date">2020 – 2022</span>
+      </div>
+      <div class="timeline-title">Técnico Grado Medio — Sistemas Microinformáticos y Redes (SMR)</div>
+      <div class="timeline-desc">
+        Redes LAN/WAN, hardware, SO Windows/Linux/macOS, diagnóstico de incidencias.
+        Prácticas en Verde Cereza S.L. (oct. 2022 – mar. 2023).
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EXPERIENCIA -->
+<section id="experiencia">
+  <p class="section-label">// 04 · experiencia</p>
+  <h2 class="section-title">Trayectoria profesional</h2>
+  <div class="exp-list">
+
+    <div class="exp-item">
+      <div class="exp-header">
+        <span class="exp-role">Fleet Specialist — Diagnóstico y Mantenimiento Técnico</span>
+        <span class="exp-date">Jun. 2021 – Ene. 2026</span>
+      </div>
+      <div class="exp-company">VOI Technology SL · Sevilla</div>
+      <ul class="exp-bullets">
+        <li>Diagnóstico y resolución de averías técnicas en flota de +300 scooters eléctricos en campo y taller</li>
+        <li>Gestión sistemática de incidencias: identificación, intervención y cierre documentado</li>
+        <li>Uso de herramientas digitales de gestión de flota (apps internas, PDA, reporting)</li>
+        <li>Capacidad de análisis sistemático desarrollada en entorno operativo de alta presión</li>
+      </ul>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-header">
+        <span class="exp-role">Técnico Mantenimiento — Movilidad Eléctrica</span>
+        <span class="exp-date">Oct. – Dic. 2019</span>
+      </div>
+      <div class="exp-company">MUVING · Sevilla</div>
+      <ul class="exp-bullets">
+        <li>Mantenimiento correctivo de motocicletas eléctricas de la flota urbana</li>
+        <li>Gestión y reposición de sistemas de batería en entorno operativo real</li>
+      </ul>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-header">
+        <span class="exp-role">Técnico de Instalaciones y Sistemas</span>
+        <span class="exp-date">May. – Nov. 2009</span>
+      </div>
+      <div class="exp-company">DALKIA Energía y Servicios · Sevilla</div>
+      <ul class="exp-bullets">
+        <li>Inspección, diagnóstico y reparación de instalaciones: electricidad, climatización, cerrajería</li>
+        <li>Gestión de partes de incidencia y seguimiento de mantenimiento preventivo/correctivo</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+
+<div class="divider"></div>
+
+<!-- PROYECTOS -->
+<section id="proyectos">
+  <p class="section-label">// 05 · proyectos</p>
+  <h2 class="section-title">Laboratorios y proyectos prácticos</h2>
+  <div class="timeline">
+
+    <div class="timeline-item">
+      <div class="timeline-header">
+        <span class="timeline-org">Lab privado · Kali Linux · Ligolo-ng</span>
+        <span class="timeline-date">2025 – 2026</span>
+      </div>
+      <div class="timeline-title">Entorno Multi-Máquina — Pentesting Completo</div>
+      <div class="timeline-desc">
+        Tres máquinas objetivo en red segmentada con pivoting real:
+      </div>
+      <ul class="exp-bullets" style="margin-top:0.6rem;">
+        <li><strong>Drupal 7:</strong> PHP Filter RCE → extracción de credenciales → escalada vía sudo</li>
+        <li><strong>WordPress:</strong> wpscan brute force → webshell WP File Manager → root vía cron job</li>
+        <li><strong>Windows Server:</strong> webshell ASPX → escalada a SYSTEM con PrintSpoofer</li>
+        <li>Pivoting entre segmentos con Ligolo-ng en entorno completamente segmentado</li>
+      </ul>
+      <div class="skill-tags" style="margin-top:0.8rem;">
+        <span class="tag">Metasploit</span><span class="tag">Ligolo-ng</span>
+        <span class="tag">PrintSpoofer</span><span class="tag">wpscan</span>
+        <span class="tag">Privilege Escalation</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-header">
+        <span class="timeline-org">Lab privado · Nmap · Gobuster · SMB</span>
+        <span class="timeline-date">2025 – 2026</span>
+      </div>
+      <div class="timeline-title">Explotación de Entorno Windows IIS</div>
+      <div class="timeline-desc">
+        Cadena completa de explotación: enumeración SMB → descubrimiento de directorios con Gobuster
+        → upload y ejecución de webshell → RCE y recuperación de flags.
+      </div>
+      <div class="skill-tags" style="margin-top:0.8rem;">
+        <span class="tag">SMB Enumeration</span><span class="tag">Gobuster</span>
+        <span class="tag">Webshell</span><span class="tag">RCE</span><span class="tag">IIS</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-header">
+        <span class="timeline-org">Proyecto personal · Python · ReportLab</span>
+        <span class="timeline-date">2026</span>
+      </div>
+      <div class="timeline-title">Manual de Referencia eJPT — 16 capítulos / 25 páginas</div>
+      <div class="timeline-desc">
+        Guía técnica completa desarrollada con Python/ReportLab que cubre toda la metodología
+        del examen eJPT: reconocimiento, enumeración, explotación y post-explotación.
+        Recurso de estudio propio generado programáticamente.
+      </div>
+      <div class="skill-tags" style="margin-top:0.8rem;">
+        <span class="tag">Python</span><span class="tag">ReportLab</span>
+        <span class="tag">eJPT</span><span class="tag">Metodología pentest</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <p class="section-label">// 06 · contacto</p>
+  <h2 class="section-title">Hablemos</h2>
+  <div class="contact-wrap">
+    <h3>¿Buscas un perfil de ciberseguridad?</h3>
+    <p>Estoy disponible para oportunidades en entornos de seguridad ofensiva, Blue Team o SOC.<br>Puedes escribirme directamente o encontrarme en las redes.</p>
+    <div class="social-links">
+
+      <a class="social-btn" href="mailto:eduardobotellobueno@gmail.com">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+        </svg>
+        Email
+      </a>
+
+      <a class="social-btn" href="https://www.linkedin.com/in/eduardobotellobueno" target="_blank" rel="noopener">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+        </svg>
+        LinkedIn
+      </a>
+
+      <a class="social-btn" href="https://github.com/edubobu88" target="_blank" rel="noopener">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+        </svg>
+        GitHub
+      </a>
+
+      <a class="social-btn" href="tel:+34650257592">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.948V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 7V5z"/>
+        </svg>
+        Teléfono
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Eduardo Botello Bueno · Sevilla · Diseñado para oportunidades en ciberseguridad</p>
+</footer>
+
+</body>
+</html>
